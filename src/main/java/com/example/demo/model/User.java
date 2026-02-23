@@ -3,6 +3,10 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * 用户实体
+ * 代表系统的注册用户，主要用于身份识别和关联数据
+ */
 @Entity
 @Table(name = "users")
 public class User {
@@ -10,9 +14,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 手机号（唯一标识） */
     @Column(unique = true, nullable = false)
     private String phone;
 
+    /** 注册时间 */
     private LocalDateTime createTime;
 
     public User() {

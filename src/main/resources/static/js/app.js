@@ -21,6 +21,7 @@ const app = Vue.createApp({
         
         const currentProfile = ref(null);
         const skipValue = ref(3);
+        const customAction = ref('');
         
         // Typewriter effect variables
         const displayedEvent = ref('');
@@ -317,12 +318,18 @@ const app = Vue.createApp({
                 const data = await res.json();
                 console.log("Next Year Response:", data);
                 updateProfileAndType(data);
+                customAction.value = ''; // Clear custom input after success
             } catch (e) {
                 alert('发生错误: ' + e.message);
                 console.error(e);
             } finally {
                 setLoading(false);
             }
+        };
+
+        const submitCustomAction = () => {
+            if (!customAction.value) return;
+            nextYear(customAction.value);
         };
         
         const skipYears = async () => {
@@ -381,7 +388,8 @@ const app = Vue.createApp({
             currentProfile, skipValue,
             login, logout, switchTab, continueGame, useTemplate,
             initProbes, startSimulation, nextYear, skipYears, createLegacy,
-            parseScenario, displayedEvent, isTyping, safeParse, getScenarioEvent
+            parseScenario, displayedEvent, isTyping, safeParse, getScenarioEvent,
+            customAction, submitCustomAction
         };
     }
 });

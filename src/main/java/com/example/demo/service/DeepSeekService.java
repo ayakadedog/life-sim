@@ -14,6 +14,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * DeepSeek API 服务
+ * 负责与 DeepSeek 大模型进行交互，处理 API 调用、重试机制和 JSON 响应解析
+ */
 @Service
 public class DeepSeekService {
 
@@ -32,11 +36,22 @@ public class DeepSeekService {
                 .build();
     }
 
+    /**
+     * 调用 DeepSeek API
+     * @param systemPrompt 系统提示词
+     * @param userPrompt 用户提示词
+     * @return API 响应内容
+     */
     public String call(String systemPrompt, String userPrompt) {
         return callWithRetry(systemPrompt, userPrompt, null);
     }
     
-    // New method for validating JSON output
+    /**
+     * 调用 DeepSeek API 并期望返回 JSON 格式
+     * @param systemPrompt 系统提示词
+     * @param userPrompt 用户提示词
+     * @return JSON 格式的响应内容
+     */
     public String callExpectingJson(String systemPrompt, String userPrompt) {
         return callWithRetry(systemPrompt, userPrompt, (content) -> {
             try {
@@ -55,6 +70,13 @@ public class DeepSeekService {
         });
     }
 
+    /**
+     * 带重试机制的 API 调用
+     * @param systemPrompt 系统提示词
+     * @param userPrompt 用户提示词
+     * @param validator 响应验证器
+     * @return API 响应内容
+     */
     private String callWithRetry(String systemPrompt, String userPrompt, java.util.function.Predicate<String> validator) {
         int attempts = 0;
         String lastError = "";
@@ -125,6 +147,11 @@ public class DeepSeekService {
         return "Failed after " + MAX_RETRIES + " attempts. Last error: " + lastError;
     }
     
+    /**
+     * 清理响应内容，去除 Markdown 代码块标记
+     * @param content 原始内容
+     * @return 清理后的内容
+     */
     private String cleanContent(String content) {
         if (content == null) return "";
         Pattern pattern = Pattern.compile("```(?:json)?\\s*([\\s\\S]*?)\\s*```");

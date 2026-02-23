@@ -3,21 +3,31 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * 游戏实例实体
+ * 代表一次完整的游戏进程，关联用户、模板和当前档案状态
+ */
 @Entity
 public class GameInstance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 关联的用户ID */
     private Long userId;
+    
+    /** 使用的模板ID（可选） */
     private Long templateId;
     
-    // Link to the running UserProfile which stores current game state
+    /** 关联的当前用户档案（存储游戏状态） */
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id")
     private UserProfile userProfile;
 
+    /** 游戏状态：ACTIVE（进行中）, FINISHED（已结束） */
     private String status; // ACTIVE, FINISHED
+    
+    /** 最后更新时间 */
     private LocalDateTime lastUpdateTime;
 
     public GameInstance() {
