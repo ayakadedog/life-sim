@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>人生重开模拟器：现实版</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #f8f5f2; 
+            font-family: 'Noto Serif SC', serif; 
+            color: #2c3e50;
+        }
+        .typewriter p {
+            overflow: hidden;
+            white-space: pre-wrap;
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .btn-choice {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-choice:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            flex-direction: column;
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div id="app" class="max-w-3xl mx-auto p-6 min-h-screen">
+    
+    <!-- Loading -->
+    <div v-if="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p class="text-gray-600 text-lg animate-pulse">{{ loadingText }}</p>
+    </div>
+
+    <!-- Header -->
+    <header class="mb-6 text-center pt-8">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2 tracking-wide">人生模拟器</h1>
+        <p class="text-gray-500 italic">性格决定命运 · 现实重构人生</p>
+    </header>
+
+    <!-- Login Step -->
+    <div v-if="step === 0" class="max-w-md mx-auto bg-white p-10 rounded-xl shadow-lg border border-gray-100 mt-20">
+        <h2 class="text-2xl font-bold mb-6 text-center">登录 / 注册</h2>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">手机号</label>
+                <input v-model="loginPhone" type="tel" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3 focus:ring-2 focus:ring-black focus:outline-none transition" placeholder="请输入手机号">
+            </div>
+            <button @click="login" class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition font-bold shadow-lg">
+                开始体验
+            </button>
+        </div>
+    </div>
+
+    <!-- Main App (Tabs) -->
+    <div v-if="step > 0 && user">
+        <!-- Tab Navigation -->
+        <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-lg z-40 flex justify-around py-3">
+            <button @click="switchTab('start')" class="flex flex-col items-center" :class="currentTab === 'start' ? 'text-black' : 'text-gray-400'">
+                <span class="text-xl">🚀</span>
+                <span class="text-xs font-bold mt-1">开始</span>
+            </button>
+            <button @click="switchTab('history')" class="flex flex-col items-center" :class="currentTab === 'history' ? 'text-black' : 'text-gray-400'">
+                <span class="text-xl">📜</span>
+                <span class="text-xs font-bold mt-1">历史</span>
+            </button>
+            <button @click="switchTab('mine')" class="flex flex-col items-center" :class="currentTab === 'mine' ? 'text-black' : 'text-gray-400'">
+                <span class="text-xl">👤</span>
+                <span class="text-xs font-bold mt-1">我的</span>
+            </button>
+        </div>
+
+        <!-- Tab Content: Start -->
+        <div v-if="currentTab === 'start'" class="pb-20">
+            <!-- Game Flow (Step 1, 2, 3) -->
+            
+            <!-- Step 1: Detailed Profile -->
+            <div v-if="step === 1" class="bg-white p-10 rounded-xl shadow-lg border border-gray-100">
+        <h2 class="text-2xl font-bold mb-8 border-l-4 border-black pl-4">第一章：初始设定</h2>
+        
+        <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">姓名</label>
+                        <input v-model="profile.basicInfo.name" type="text" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3 focus:ring-2 focus:ring-black focus:outline-none transition">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">游戏模式</label>
+                        <select class="w-full rounded-lg border-gray-300 bg-gray-50 p-3 font-bold" v-model="profile.difficulty" :class="{
+                            'text-green-600': profile.difficulty === 'Easy',
+                            'text-blue-600': profile.difficulty === 'Normal',
+                            'text-orange-600': profile.difficulty === 'Hard',
+                            'text-red-600': profile.difficulty === 'Hell'
+                        }">
+                            <option value="Easy">爽文模式 (一路开挂)</option>
+                            <option value="Normal">常规模式 (真实人生)</option>
+                            <option value="Hard">困难模式 (步步惊心)</option>
+                            <option value="Hell">地狱模式 (绝望求生)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">初始年龄</label>
+                        <input v-model.number="profile.basicInfo.startAge" type="number" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3 focus:ring-2 focus:ring-black focus:outline-none transition">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">学历</label>
+                        <select class="w-full rounded-lg border-gray-300 bg-gray-50 p-3" v-model="profile.basicInfo.educationLevel">
+                            <option value="High School">高中</option>
+                            <option value="Junior College">大专</option>
+                            <option value="Bachelor">本科</option>
+                            <option value="Master">硕士</option>
+                            <option value="PhD">博士</option>
+                            <option value="Overseas Student">留学生</option>
+                            <option value="Self-Taught">自学成才</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">职业</label>
+                        <input type="text" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3" v-model="profile.basicInfo.profession" placeholder="例如：程序员、自由职业者">
+                    </div>
+                </div>
+
+                <!-- Family Background Expansion -->
+                <div class="pt-6 border-t border-gray-100">
+                     <h3 class="text-sm font-bold text-gray-800 mb-4">家庭背景</h3>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">家庭资产估值</label>
+                            <input type="text" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3" v-model="profile.familyBackground.familyAssets" placeholder="例如：500万、三套房">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">父母状况</label>
+                            <select class="w-full rounded-lg border-gray-300 bg-gray-50 p-3" v-model="profile.familyBackground.parentsStatus">
+                                <option value="Parents Alive">父母健在</option>
+                                <option value="Single Parent">单亲家庭</option>
+                                <option value="Orphan">孤儿</option>
+                                <option value="Estranged">关系疏离</option>
+                            </select>
+                        </div>
+                     </div>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">父亲职业</label>
+                            <input type="text" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3" v-model="profile.familyBackground.fatherProfession" placeholder="例如：公务员">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">母亲职业</label>
+                            <input type="text" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3" v-model="profile.familyBackground.motherProfession" placeholder="例如：教师">
+                        </div>
+                     </div>
+                </div>
+                
+                <!-- Personal History (Free Text) -->
+                <div class="pt-6 border-t border-gray-100">
+                     <h3 class="text-sm font-bold text-gray-800 mb-4">人生经历 (选填)</h3>
+                     <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">你的故事</label>
+                        <textarea class="w-full rounded-lg border-gray-300 bg-gray-50 p-3 h-24" 
+                            v-model="profile.basicInfo.lifeExperiences" 
+                            placeholder="在这里输入你过去的经历、遗憾或高光时刻。这些将成为你平行人生的伏笔..."></textarea>
+                     </div>
+                </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">出生地/居住地</label>
+                    <select v-model="profile.basicInfo.location" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3">
+                        <option>一线城市 (北上广深)</option>
+                        <option>新一线城市 (杭成武等)</option>
+                        <option>普通地级市</option>
+                        <option>十八线小县城</option>
+                        <option>偏远农村</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">家庭背景</label>
+                    <select v-model="profile.familyBackground.parentsStatus" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3">
+                        <option>父母健在，家庭和睦</option>
+                        <option>单亲家庭</option>
+                        <option>父母离异，关系紧张</option>
+                        <option>孤儿</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">初始存款 (负数代表负债)</label>
+                    <input v-model.number="profile.economicStatus.savings" type="number" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">健康状况 (精力值)</label>
+                    <input v-model.number="profile.healthStatus.energyLevel" type="range" min="50" max="100" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-4">
+                    <div class="text-right text-sm text-gray-500">{{ profile.healthStatus.energyLevel }}</div>
+                </div>
+            </div>
+        </div>
+
+        <button @click="initProbes" class="mt-8 w-full bg-black text-white py-4 rounded-lg hover:bg-gray-800 transition font-bold text-lg shadow-lg">
+            下一步：深度剖析
+        </button>
+    </div>
+
+    <!-- Step 2: Psychological Probes -->
+    <div v-if="step === 2" class="bg-white p-10 rounded-xl shadow-lg border border-gray-100">
+        <h2 class="text-2xl font-bold mb-8 border-l-4 border-black pl-4">第二章：深度剖析</h2>
+        <p class="text-gray-500 mb-6">为了生成更真实的平行宇宙，我们需要了解你的内心世界...</p>
+        
+        <div class="space-y-8">
+            <div v-for="(probe, index) in probes" :key="index" class="space-y-2">
+                <label class="block text-lg font-bold text-gray-800">{{ index + 1 }}. {{ probe }}</label>
+                <textarea v-model="probeAnswers[probe]" rows="3" class="w-full rounded-lg border-gray-300 bg-gray-50 p-3 focus:ring-2 focus:ring-black focus:outline-none transition" placeholder="请真诚作答..."></textarea>
+            </div>
+        </div>
+
+        <button @click="startSimulation" class="mt-8 w-full bg-black text-white py-4 rounded-lg hover:bg-gray-800 transition font-bold text-lg shadow-lg">
+            开始模拟人生
+        </button>
+    </div>
+
+    <!-- Step 3: Game Loop -->
+    <div v-if="step === 3 && currentProfile" class="space-y-6">
+        <!-- Status Bar -->
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap justify-between items-center text-sm sticky top-0 z-30">
+            <div class="flex items-center space-x-4">
+                <div class="font-bold text-xl">{{ currentProfile.currentAge }}岁</div>
+                <div class="text-gray-500">{{ currentProfile.basicInfo.profession }}</div>
+                <div class="text-gray-500">{{ currentProfile.basicInfo.location }}</div>
+            </div>
+            <div class="flex items-center space-x-6">
+                <div class="flex items-center">
+                    <span class="mr-2">❤️</span>
+                    <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-red-500" :style="{ width: currentProfile.healthStatus.energyLevel + '%' }"></div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <span class="mr-2">💰</span>
+                    <span class="font-bold">¥{{ currentProfile.economicStatus.savings.toLocaleString() }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Event Display -->
+        <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100 min-h-[300px] flex flex-col justify-center typewriter">
+            <p class="text-lg leading-loose text-gray-800">{{ displayedEvent }}</p>
+        </div>
+
+        <!-- Interaction Area -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Custom Action -->
+            <div class="bg-white p-6 rounded-xl shadow border border-gray-100 md:col-span-2">
+                <h3 class="font-bold text-gray-700 mb-4">你的抉择</h3>
+                <div class="flex space-x-2">
+                    <input type="text" id="custom-action" class="flex-1 rounded-lg border-gray-300 bg-gray-50 p-3 focus:ring-2 focus:ring-black focus:outline-none transition" placeholder="我想..." @keyup.enter="nextYear($event.target.value)">
+                    <button @click="nextYear(document.getElementById('custom-action').value)" class="bg-black text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-800 transition">
+                        执行
+                    </button>
+                </div>
+                
+                <!-- Suggested Choices (if any) -->
+                <div v-if="currentProfile.availableChoices && currentProfile.availableChoices.length > 0" class="mt-4 flex flex-wrap gap-2">
+                    <button v-for="choice in currentProfile.availableChoices" :key="choice" @click="nextYear(choice)" class="btn-choice bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-full text-sm font-medium transition">
+                        {{ choice }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Actions -->
+            <div class="bg-white p-6 rounded-xl shadow border border-gray-100">
+                <h3 class="font-bold text-gray-700 mb-4">时光飞逝</h3>
+                <div class="flex items-center space-x-2">
+                    <input type="number" v-model.number="skipValue" class="w-20 rounded-lg border-gray-300 bg-gray-50 p-2 text-center" min="1" max="10">
+                    <button @click="skipYears" class="flex-1 bg-gray-100 text-gray-800 py-2 rounded-lg font-bold hover:bg-gray-200 transition">
+                        跳过 {{ skipValue }} 年
+                    </button>
+                </div>
+            </div>
+
+            <!-- Legacy System -->
+            <div class="bg-white p-6 rounded-xl shadow border border-gray-100">
+                <h3 class="font-bold text-gray-700 mb-4">家族传承</h3>
+                <button @click="createLegacy" class="w-full bg-gray-800 text-white py-2 rounded-lg font-bold hover:bg-black transition">
+                    开启下一代
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: History -->
+    <div v-if="currentTab === 'history'" class="pb-20 space-y-4">
+        <h2 class="text-2xl font-bold mb-6">人生履历</h2>
+        <div v-for="instance in historyList" :key="instance.id" class="bg-white p-6 rounded-lg shadow border border-gray-100">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h3 class="font-bold text-lg">{{ instance.userProfile?.basicInfo?.name || '未知角色' }}</h3>
+                    <p class="text-sm text-gray-500">{{ instance.userProfile?.basicInfo?.profession || '无业游民' }} · {{ instance.userProfile?.currentAge || 0 }}岁</p>
+                </div>
+                <span class="px-2 py-1 text-xs rounded bg-green-100 text-green-800" v-if="instance.status === 'ACTIVE'">进行中</span>
+                <span class="px-2 py-1 text-xs rounded bg-gray-100 text-gray-800" v-else>已完结</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                {{ instance.userProfile ? getScenarioEvent(instance.userProfile.currentScenario) : '暂无记录' }}
+            </p>
+            <div class="flex justify-end space-x-2">
+                <button @click="continueGame(instance)" class="text-sm bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">
+                    继续旅程
+                </button>
+            </div>
+        </div>
+        <div v-if="historyList.length === 0" class="text-center text-gray-400 py-10">
+            暂无历史记录，快去开启一段新人生吧！
+        </div>
+    </div>
+
+    <!-- Tab Content: Mine -->
+    <div v-if="currentTab === 'mine'" class="pb-20 space-y-4">
+        <h2 class="text-2xl font-bold mb-6">我的角色卡</h2>
+        <div v-for="template in templates" :key="template.id" class="bg-white p-6 rounded-lg shadow border border-gray-100 relative overflow-hidden">
+            <div class="absolute top-0 right-0 bg-yellow-400 text-xs font-bold px-2 py-1 rounded-bl">TEMPLATE</div>
+            <h3 class="font-bold text-lg mb-2">{{ template.name }}</h3>
+            <div class="text-sm text-gray-600 space-y-1">
+                <p>职业: {{ safeParse(template.basicInfo).profession || '未知' }}</p>
+                <p>初始资产: ¥{{ safeParse(template.initialAttributes).savings || 0 }}</p>
+            </div>
+            <button @click="useTemplate(template)" class="mt-4 w-full border border-black text-black py-2 rounded hover:bg-gray-50 transition text-sm font-bold">
+                使用此模板重生
+            </button>
+        </div>
+        <div v-if="templates.length === 0" class="text-center text-gray-400 py-10">
+            暂无收藏的角色模板
+        </div>
+        
+        <div class="mt-8 pt-8 border-t border-gray-200">
+             <div class="bg-gray-50 p-4 rounded-lg">
+                <p class="text-xs text-gray-500 mb-1">当前登录用户</p>
+                <p class="font-bold text-lg">{{ user.phone }}</p>
+             </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<script src="/js/app.js?v=2"></script>
+</body>
+</html>

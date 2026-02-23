@@ -1,0 +1,16 @@
+{
+  "basicInfo": {
+    "name": "TestUser",
+    "startAge": 25,
+    "location": "Beijing",
+    "profession": "Tester",
+    "educationLevel": "Bachelor"
+  },
+  "economicStatus": {
+    "savings": 1000,
+    "debt": 0
+  },
+  "familyBackground": {
+    "parentsStatus": "Normal"
+  }
+}

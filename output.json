@@ -1,0 +1,76 @@
+﻿{
+    "id":  "7ea0a5a2-31c5-4c34-af88-e5667c415979",
+    "basicInfo":  {
+                      "name":  "TestUser",
+                      "startAge":  25,
+                      "gender":  null,
+                      "location":  "Beijing",
+                      "educationLevel":  "Bachelor",
+                      "profession":  "Tester"
+                  },
+    "economicStatus":  {
+                           "savings":  1000.0,
+                           "debt":  0.0,
+                           "monthlyIncome":  0.0,
+                           "assets":  [
+
+                                      ]
+                       },
+    "familyBackground":  {
+                             "parentsStatus":  "Normal",
+                             "economicSupport":  null,
+                             "siblingCount":  0
+                         },
+    "healthStatus":  {
+                         "energyLevel":  0,
+                         "chronicConditions":  [
+
+                                               ],
+                         "familyHistory":  null
+                     },
+    "socialConnections":  {
+                              "relationshipStatus":  null,
+                              "socialCircleQuality":  null
+                          },
+    "personalityTraits":  {
+
+                          },
+    "coreValues":  [
+
+                   ],
+    "innerConflicts":  [
+
+                       ],
+    "currentAge":  25,
+    "currentScenario":  "TestUserï¼äºåäºå²ï¼æ¬ç§å­¦åãä½ çç¶æ¯æ¯åäº¬æ®éå·¥èªé¶å±ï¼ç¨ä¸åå¹´ç§¯èæ¢æ¥ä¸å¥äºç¯å¤èç ´å°ãä½ ä»å°å¨è¡¥ä¹ ç­åå­¦åºæ¿çç¦èä¸­é¿å¤§ï¼ç¥éæ¯ä¸åé±é½å¸¦çæ±ç¢±å³ãç°å¨ä½ åå¨åç§å±çéæ­é´éï¼ææºå±å¹çå\u0085æ çç²æ«çè¸ââé¶è¡å¡ä½é¢æ¾ç¤ºåä½æ°çå­æ¬¾ï¼é£æ¯ä½ å¨è¿ä¸ªåå¸çå­ä¸å»çç¼å²å«ï¼èå¾åå¼ å¤å°çº¸ãä½ çèµ·ç¹å³å®äºæ¯ä¸æ­¥é½å¿\u0085é¡»ç²¾ç¡®è®¡ç®ï¼å ä¸ºå®¹éçæ©å·²å¨åºçæ¶å°±è¢«æ å¥½äºä»·æ ¼ã",
+    "availableChoices":  [
+                             "ç»§ç»­ä¸æ³¨äºå·¥ä½",
+                             "å¤è±æ¶é´éªéªå®¶äºº",
+                             "å°è¯åå±å¯ä¸"
+                         ],
+    "generation":  1,
+    "parentProfileId":  null,
+    "lifeHistory":  [
+
+                    ],
+    "npcs":  [
+                 {
+                     "id":  15,
+                     "name":  "ç¶äº²",
+                     "relation":  "FATHER",
+                     "age":  50,
+                     "status":  "HEALTHY",
+                     "intimacy":  80,
+                     "currentSituation":  "ä¾ç¶å¨ä¸ºå®¶åº­æå³ï¼å¶å°æ±æ¨è\u0085°ç¼ã"
+                 },
+                 {
+                     "id":  16,
+                     "name":  "æ¯äº²",
+                     "relation":  "MOTHER",
+                     "age":  49,
+                     "status":  "HEALTHY",
+                     "intimacy":  85,
+                     "currentSituation":  "æ¯å¤©ææå®¶å¡ï¼ææ\u0085å¿ä½ çç»èº«å¤§äºã"
+                 }
+             ]
+}
